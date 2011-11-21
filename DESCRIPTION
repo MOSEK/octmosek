@@ -1,0 +1,16 @@
+Name: OctMOSEK
+Version: 0.9
+Date: 2011-03-07
+Title: The Octave-to-MOSEK Optimization Interface
+Author: Henrik Alsing Friberg
+Maintainer: Henrik Alsing Friberg <haf@mosek.com>
+Description: An interface to the MOSEK Optimization Software designed to 
+        solve large-scale mathematical optimization problems. MOSEK provides 
+        specialized solvers for linear programming, mixed integer programming 
+        and many types of nonlinear convex optimization problems. Trial and 
+        free academic licenses available at http://www.mosek.com.
+Url: http://www.mosek.com
+Autoload: off
+Depends: octave (>= 3.2.3)
+License: LGPL (>= 2.1)
+

@@ -1,0 +1,9 @@
+OctMOSEK >> The Octave-to-MOSEK Optimization Interface
+MOSEK Optimization Commands
+  mosek
+  mosek_clean
+  mosek_version
+File handling
+  mosek_read
+  mosek_write
+

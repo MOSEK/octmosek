@@ -1,0 +1,5 @@
+clear -f __mosek__
+clear -f __mosek_clean__
+clear -f __mosek_version__
+clear -f __mosek_read__
+clear -f __mosek_write__
