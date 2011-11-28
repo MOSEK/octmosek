@@ -461,9 +461,9 @@ void validate_SparseMatrix(SparseMatrix& object, string name, int nrows, int nco
 }
 
 //
-// Handling of: ColumnVector (use IntegerArray for integer-typed vectors)
+// Handling of: Row Vector (use IntegerArray for integer-typed vectors)
 //
-void map_seek_ColumnVector(ColumnVector *out, Octave_map& map, string name, bool optional=false)
+void map_seek_RowVector(RowVector *out, Octave_map& map, string name, bool optional=false)
 {
 	octave_value val = empty_octave_value;
 	map_seek_Value(&val, map, name, optional);
@@ -475,19 +475,19 @@ void map_seek_ColumnVector(ColumnVector *out, Octave_map& map, string name, bool
 			throw msk_exception("Variable \"" + name + "\" needs a non-empty definition");
 	}
 
-	ColumnVector temp = val.column_vector_value();
+	RowVector temp = val.row_vector_value();
 	if (error_state)
-		throw msk_exception("Variable \"" + name + "\" should be a Column Vector");
+		throw msk_exception("Variable \"" + name + "\" should be a Vector");
 
 	*out = temp;
 }
-void validate_ColumnVector(ColumnVector& object, string name, int nrows, bool optional=false)
+void validate_RowVector(RowVector& object, string name, int nrows, bool optional=false)
 {
 	if (optional && isEmpty(object))
 		return;
 
-	if (object.dim1() != nrows)
-		throw msk_exception("Column Vector \"" + name + "\" has the wrong dimensions");
+	if (object.nelem() != nrows)
+		throw msk_exception("Vector \"" + name + "\" has the wrong dimensions");
 }
 
 //
@@ -506,8 +506,8 @@ void map_seek_IntegerArray(int32NDArray *out, Octave_map& map, string name, bool
 	}
 
 	int32NDArray temp = val.int32_array_value();
-	if (error_state || temp.dim2() != 1)
-		throw msk_exception("Variable \"" + name + "\" should be a Column Vector with integer-typed entries");
+	if (error_state)
+		throw msk_exception("Variable \"" + name + "\" should be a Vector with integer-typed entries");
 
 	*out = temp;
 }
@@ -516,8 +516,8 @@ void validate_IntegerArray(int32NDArray& object, string name, int nrows, bool op
 	if (optional && isEmpty(object))
 		return;
 
-	if (object.dim1() != nrows)
-		throw msk_exception("Column Vector \"" + name + "\" has the wrong dimensions");
+	if (object.nelem() != nrows)
+		throw msk_exception("Integer Vector \"" + name + "\" has the wrong dimensions");
 }
 
 //
@@ -535,8 +535,8 @@ void map_seek_Scalar(double *out, Octave_map& map, string name, bool optional=fa
 			throw msk_exception("Variable \"" + name + "\" needs a non-empty definition");
 	}
 
-	ColumnVector temp = val.column_vector_value();
-	if (error_state || temp.dim1() != 1 || temp.dim2() != 1)
+	RowVector temp = val.row_vector_value();
+	if (error_state || temp.nelem() != 1)
 		throw "Variable \"" + name + "\" should be a Scalar";
 
 	*out = temp.elem(0);
@@ -730,16 +730,16 @@ void append_initsol(MSKtask_t task, Octave_map initsol, int NUMCON, int NUMVAR)
 		}
 
 		// Get current solution items
-		Cell skc; 		  map_seek_Cell(&skc, cursol, "skc", true);			validate_Cell(skc, "skc", NUMCON, true);
-		ColumnVector xc;  map_seek_ColumnVector(&xc, cursol, "xc", true);	validate_ColumnVector(xc, "xc", NUMCON, true);
-		ColumnVector slc; map_seek_ColumnVector(&slc, cursol, "slc", true);	validate_ColumnVector(slc, "slc", NUMCON, true);
-		ColumnVector suc; map_seek_ColumnVector(&suc, cursol, "suc", true);	validate_ColumnVector(suc, "suc", NUMCON, true);
+		Cell skc; 		map_seek_Cell(&skc, cursol, "skc", true);		validate_Cell(skc, "skc", NUMCON, true);
+		RowVector xc;  	map_seek_RowVector(&xc, cursol, "xc", true);	validate_RowVector(xc, "xc", NUMCON, true);
+		RowVector slc; 	map_seek_RowVector(&slc, cursol, "slc", true);	validate_RowVector(slc, "slc", NUMCON, true);
+		RowVector suc; 	map_seek_RowVector(&suc, cursol, "suc", true);	validate_RowVector(suc, "suc", NUMCON, true);
 
-		Cell skx; 		  map_seek_Cell(&skx, cursol, "skx", true);			validate_Cell(skx, "skx", NUMVAR, true);
-		ColumnVector xx;  map_seek_ColumnVector(&xx, cursol, "xx", true);	validate_ColumnVector(xx, "xx", NUMVAR, true);
-		ColumnVector slx; map_seek_ColumnVector(&slx, cursol, "slx", true);	validate_ColumnVector(slx, "slx", NUMVAR, true);
-		ColumnVector sux; map_seek_ColumnVector(&sux, cursol, "sux", true);	validate_ColumnVector(sux, "sux", NUMVAR, true);
-		ColumnVector snx; map_seek_ColumnVector(&snx, cursol, "snx", true);	validate_ColumnVector(snx, "snx", NUMVAR, true);
+		Cell skx; 		map_seek_Cell(&skx, cursol, "skx", true);		validate_Cell(skx, "skx", NUMVAR, true);
+		RowVector xx;  	map_seek_RowVector(&xx, cursol, "xx", true);	validate_RowVector(xx, "xx", NUMVAR, true);
+		RowVector slx; 	map_seek_RowVector(&slx, cursol, "slx", true);	validate_RowVector(slx, "slx", NUMVAR, true);
+		RowVector sux; 	map_seek_RowVector(&sux, cursol, "sux", true);	validate_RowVector(sux, "sux", NUMVAR, true);
+		RowVector snx; 	map_seek_RowVector(&snx, cursol, "snx", true);	validate_RowVector(snx, "snx", NUMVAR, true);
 
 		bool anyinfocon = !isEmpty(skc) || !isEmpty(xc) || !isEmpty(slc) || !isEmpty(suc);
 		bool anyinfovar = !isEmpty(skx) || !isEmpty(xx) || !isEmpty(slx) || !isEmpty(sux) || !isEmpty(snx);
@@ -910,12 +910,12 @@ void set_boundkey(double bl, double bu, MSKboundkeye *bk)
 void set_parameter(MSKtask_t task, string type, string name, octave_value value)
 {
 	if (isEmpty(value)) {
-		printwarning("The parameter '" + name + "' was ignored due to an empty definition.");
+		printwarning("The parameter '" + name + "' from " + type + " was ignored due to an empty definition.");
 		return;
 	}
 
-	if (value.numel() >= 2) {
-		throw msk_exception("The parameter '" + name + "' had more than one element in its definition.");
+	if (!value.is_string() && value.numel() >= 2) {
+		throw msk_exception("The parameter '" + name + "' from " + type + " had more than one element in its definition.");
 	}
 
 	// Convert name to MOSEK input with correct prefix
@@ -946,12 +946,12 @@ void set_parameter(MSKtask_t task, string type, string name, octave_value value)
 
 				char mskvaluestr[MSK_MAX_STR_LEN];
 				if (!MSK_symnamtovalue(const_cast<MSKCONST char*>(valuestr.c_str()), mskvaluestr))
-					throw msk_exception("The value of parameter " + name + " was not recognized");
+					throw msk_exception("The value of parameter '" + name + "' from " + type + " was not recognized");
 
 				mskvalue = atoi(mskvaluestr);
 
 			} else {
-				throw msk_exception("The value of parameter " + name + " should be an integer or string");
+				throw msk_exception("The value of parameter '" + name + "' from " + type + " should be an integer or string");
 			}
 
 			errcatch( MSK_putintparam(task,(MSKiparame)pidx,mskvalue) );
@@ -962,7 +962,7 @@ void set_parameter(MSKtask_t task, string type, string name, octave_value value)
 		{
 			double mskvalue = value.scalar_value();
 			if (error_state)
-				throw msk_exception("The value of parameter " + name + " should be a double");
+				throw msk_exception("The value of parameter '" + name + "' from " + type + " should be a double");
 
 			errcatch( MSK_putdouparam(task,(MSKdparame)pidx,mskvalue) );
 			break;
@@ -972,14 +972,14 @@ void set_parameter(MSKtask_t task, string type, string name, octave_value value)
 		{
 			string mskvalue = value.string_value();
 			if (error_state)
-				throw msk_exception("The value of parameter " + name + " should be a string");
+				throw msk_exception("The value of parameter " + name + "' from " + type + " should be a string");
 
 			errcatch( MSK_putstrparam(task, (MSKsparame)pidx, const_cast<MSKCONST char*>(mskvalue.c_str())) );
 			break;
 		}
 
 		default:
-			throw msk_exception("Parameter " + name + " was not recognized.");
+			throw msk_exception("Parameter '" + name + "' from " + type + " was not recognized.");
 	}
 }
 
@@ -1149,7 +1149,7 @@ void msk_getsolution(Octave_map &solvec, MSKtask_t task)
 									NUMCON,			/* Index of last variable+1. */
 									mskskc));
 
-			Cell skcvec(dim_vector(NUMCON, 1));
+			Cell skcvec(dim_vector(1, NUMCON));
 			char skcname[MSK_MAX_STR_LEN];
 			for (int ci = 0; ci < NUMCON; ci++) {
 				errcatch( MSK_sktostr(task, mskskc[ci], skcname) );
@@ -1168,7 +1168,7 @@ void msk_getsolution(Octave_map &solvec, MSKtask_t task)
 									NUMVAR,			/* Index of last variable+1. */
 									mskskx));
 
-			Cell skxvec(dim_vector(NUMVAR, 1));
+			Cell skxvec(dim_vector(1, NUMVAR));
 			char skxname[MSK_MAX_STR_LEN];
 			for (int xi = 0; xi < NUMVAR; xi++) {
 				errcatch( MSK_sktostr(task, mskskx[xi], skxname) );
@@ -1189,7 +1189,7 @@ void msk_getsolution(Octave_map &solvec, MSKtask_t task)
 			int vsize;
 			getspecs_solitem(vtype, NUMVAR, NUMCON, vname, vsize);
 
-			ColumnVector xx(vsize);
+			RowVector xx(vsize);
 			double *pxx = xx.fortran_vec();
 			errcatch( MSK_getsolutionslice(task,
 									stype, 		/* Request current solution type. */
@@ -1229,10 +1229,10 @@ void msk_addresponse(Octave_map &ret_val, const msk_response &res, bool overwrit
 
 /* This function initialize the task and sets up the problem. */
 void msk_setup(Task_handle &task,
-					   MSKobjsensee sense, ColumnVector cvec, double c0,
+					   MSKobjsensee sense, RowVector cvec, double c0,
 					   SparseMatrix A,
-					   ColumnVector blcvec, ColumnVector bucvec,
-					   ColumnVector blxvec, ColumnVector buxvec,
+					   RowVector blcvec, RowVector bucvec,
+					   RowVector blxvec, RowVector buxvec,
 					   Cell cones, int32NDArray intsubvec)
 {
 	int NUMANZ = A.nelem();
@@ -1486,13 +1486,13 @@ public:
 	MSKintt	numcones;
 
 	MSKobjsensee	sense;
-	ColumnVector 	c;
+	RowVector 		c;
 	double 			c0;
 	SparseMatrix	A;
-	ColumnVector 	blc;
-	ColumnVector 	buc;
-	ColumnVector 	blx;
-	ColumnVector 	bux;
+	RowVector 		blc;
+	RowVector 		buc;
+	RowVector 		blx;
+	RowVector 		bux;
 	Cell 			cones;
 	int32NDArray 	intsub;
 	Octave_map 		initsol;
@@ -1529,14 +1529,14 @@ public:
 		sense = get_objective(sensename);
 
 		// Objective function
-		map_seek_ColumnVector(&c, arglist, OCT_ARGS.c);			validate_ColumnVector(c, OCT_ARGS.c, numvar);
+		map_seek_RowVector(&c, arglist, OCT_ARGS.c);			validate_RowVector(c, OCT_ARGS.c, numvar);
 		map_seek_Scalar(&c0, arglist, OCT_ARGS.c0, true);
 
 		// Constraint and Variable Bounds
-		map_seek_ColumnVector(&blc, arglist, OCT_ARGS.blc);		validate_ColumnVector(blc, OCT_ARGS.blc, numcon);
-		map_seek_ColumnVector(&buc, arglist, OCT_ARGS.buc);		validate_ColumnVector(buc, OCT_ARGS.buc, numcon);
-		map_seek_ColumnVector(&blx, arglist, OCT_ARGS.blx);		validate_ColumnVector(blx, OCT_ARGS.blx, numvar);
-		map_seek_ColumnVector(&bux, arglist, OCT_ARGS.bux);		validate_ColumnVector(bux, OCT_ARGS.bux, numvar);
+		map_seek_RowVector(&blc, arglist, OCT_ARGS.blc);		validate_RowVector(blc, OCT_ARGS.blc, numcon);
+		map_seek_RowVector(&buc, arglist, OCT_ARGS.buc);		validate_RowVector(buc, OCT_ARGS.buc, numcon);
+		map_seek_RowVector(&blx, arglist, OCT_ARGS.blx);		validate_RowVector(blx, OCT_ARGS.blx, numvar);
+		map_seek_RowVector(&bux, arglist, OCT_ARGS.bux);		validate_RowVector(bux, OCT_ARGS.bux, numvar);
 
 		// Cones, Integers variables and Solutions
 		map_seek_Cell(&cones, arglist, OCT_ARGS.cones, true);
@@ -1640,7 +1640,7 @@ public:
 		{
 			printdebug("problem_type::MOSEK_read - Objective coefficients");
 
-			c = ColumnVector(numvar);
+			c = RowVector(numvar);
 			double *pc = c.fortran_vec();
 			errcatch( MSK_getc(task, pc) );
 		}
@@ -1663,8 +1663,8 @@ public:
 		{
 			printdebug("problem_type::MOSEK_read - Constraint bounds");
 
-			blc = ColumnVector(numcon);
-			buc = ColumnVector(numcon);
+			blc = RowVector(numcon);
+			buc = RowVector(numcon);
 
 			double *pblc = blc.fortran_vec();
 			double *pbuc = buc.fortran_vec();
@@ -1703,8 +1703,8 @@ public:
 		{
 			printdebug("problem_type::MOSEK_read - Variable bounds");
 
-			blx = ColumnVector(numvar);
-			bux = ColumnVector(numvar);
+			blx = RowVector(numvar);
+			bux = RowVector(numvar);
 
 			double *pblx = blx.fortran_vec();
 			double *pbux = bux.fortran_vec();
@@ -1743,7 +1743,7 @@ public:
 		if (numcones > 0) {
 			printdebug("problem_type::MOSEK_read - Cones");
 
-			cones = Cell(Array<octave_value>(dim_vector(numcones,1)));
+			cones = Cell(Array<octave_value>(dim_vector(1,numcones)));
 			octave_value *conesvec = cones.fortran_vec();
 
 			for (int i=0; i<numcones; i++) {
@@ -1760,7 +1760,7 @@ public:
 				//   - Conversion to Array<int32_t> is just a copy
 
 				MSKidxt submem[numconemembers];
-				int32NDArray subvec(dim_vector(numconemembers,1));
+				int32NDArray subvec(dim_vector(1,numconemembers));
 				octave_int32 *psub = subvec.fortran_vec();
 
 				MSKconetypee msktype;
@@ -1788,7 +1788,7 @@ public:
 		if (numintvar > 0) {
 			printdebug("problem_type::MOSEK_read - Integer subindexes");
 
-			intsub = int32NDArray(dim_vector(numintvar,1));
+			intsub = int32NDArray(dim_vector(1,numintvar));
 			octave_int32 *pintsub = intsub.fortran_vec();
 
 			int idx = 0;
@@ -2000,10 +2000,13 @@ void msk_solve(Octave_map &ret_val, Task_handle &task, options_type options)
 		if (octave_signal_caught) {
 
 			// TODO: FIND A WAY TO ACHIEVE SOMETHING LIKE THIS:
-//			// Tell Octave that the CTRL+C interruption has been handled
-//			octave_signal_caught = 0;
-//			octave_interrupt_state = 0;  // <-- this line currently does not work and the variable is accumulated until
-										 //     panic: Interrupt -- stopping myself...
+//
+//			octave_signal_caught = 0;    // <-- Tell Octave that the CTRL+C interruption has been handled.
+//										 //		This will allow return values, but will create problems if
+//										 //     the variable 'octave_interrupt_state' is not reset.
+//			octave_interrupt_state = 0;  // <-- this line currently does not work, and their are currently
+//										 //     no other ways to reset it. If it accumulates to 3, you get
+//										 //     panic: Interrupt -- stopping myself...
 
 			printoutput("Optimization interrupted because of termination signal, e.g. <CTRL> + <C>.\n", typeERROR);
 

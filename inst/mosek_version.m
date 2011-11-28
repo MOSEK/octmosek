@@ -1,10 +1,10 @@
 ## -*- texinfo -*-
 ## @deftypefn{Loadable Function} {@var{r} =} mosek_version ()
 ## 
-## >> Version of the MOSEK Optimization Library
+## >> Version of the MOSEK optimization library.
 ##
 ## Retrieves a string @var{r}, containing the version number of the utilized 
-## MOSEK Optimization Library.
+## MOSEK optimization library.
 ##
 ## @seealso{mosek}
 ##

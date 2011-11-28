@@ -1,7 +1,7 @@
 ## -*- texinfo -*-
 ## @deftypefn{Loadable Function} {@var{r} =} mosek_write (@var{problem}, @var{modelfile}, @var{opts} {= struct()})
 ## 
-## >> Write problem to a model file
+## >> Write problem to a model file.
 ##
 ## Outputs a model of an optimization problem in any standard modelling 
 ## fileformat (e.g. lp, opf, mps, mbt, etc.), controlled by a set of options. 
@@ -10,21 +10,21 @@
 ## @sp 1
 ## ========== Arguments ==========
 ## @sp 1
-## @multitable {...............} {.................} {..........}
-## @item problem 			 @tab STRUCTURE		 @tab			
+## @multitable {..............} {..................} {...........}
+## @item problem 			 @tab STRUCTURE		@tab			
 ## @end multitable
 ##
-## @multitable {...............} {.................} {..........}
-## @item modelfile 			@tab STRING (filepath)	@tab			
+## @multitable {..............} {..................} {...........}
+## @item modelfile 			 @tab STRING (filepath)	@tab			
 ## @end multitable
 ##
-## @multitable {...............} {.................} {..........}
+## @multitable {..............} {..................} {...........}
 ## @item opts                            @tab STRUCTURE          @tab (OPTIONAL)         
-## @item __.verbose                      @tab NUMERIC            @tab (OPTIONAL)         
-## @item __.usesol                       @tab BOOLEAN            @tab (OPTIONAL)         
-## @item __.useparam                     @tab BOOLEAN            @tab (OPTIONAL)         
-## @item __.writebefore                  @tab STRING (filepath)  @tab (OPTIONAL)         
-## @item __.writeafter                   @tab STRING (filepath)  @tab (OPTIONAL)         
+## @item ..verbose                       @tab SCALAR             @tab (OPTIONAL)         
+## @item ..usesol                        @tab BOOLEAN            @tab (OPTIONAL)         
+## @item ..useparam                      @tab BOOLEAN            @tab (OPTIONAL)         
+## @item ..writebefore                   @tab STRING (filepath)  @tab (OPTIONAL)         
+## @item ..writeafter                    @tab STRING (filepath)  @tab (OPTIONAL)         
 ## @end multitable
 ##
 ## The @var{problem} should be compliant with the input specification of 
@@ -41,43 +41,43 @@
 ## some of which may have been specified by the problem description, 
 ## is indicated by @var{useparam} which by default is FALSE.
 ##
-## @multitable {...............} {.................} {..........}
+## @multitable {..............} {..................} {...........}
 ## @item problem 			 @tab Problem desciption
 ## @end multitable
 ##
-## @multitable {...............} {...............................................} 
+## @multitable {..............} {...............................................} 
 ## @item modelfile 			 @tab Filepath to the model
 ## @end multitable
 ## 
-## @multitable {...............} {...............................................} 
+## @multitable {..............} {...............................................} 
 ## @item opts                            @tab Options 
-## @item __.verbose                      @tab Output logging verbosity 
-## @item __.usesol                       @tab Whether to use the initial solution 
-## @item __.useparam                     @tab Whether to use the specified parameter settings 
-## @item __.writebefore                  @tab Filepath used to export model 
-## @item __.writeafter                   @tab Filepath used to export model and solution 
+## @item ..verbose                       @tab Output logging verbosity 
+## @item ..usesol                        @tab Whether to use the initial solution 
+## @item ..useparam                      @tab Whether to use the specified parameter settings 
+## @item ..writebefore                   @tab Filepath used to export model 
+## @item ..writeafter                    @tab Filepath used to export model and solution 
 ## @end multitable
 ## 
 ## @sp 1
 ## ========== Value ==========
 ## @sp 1
 ##
-## @multitable {...............} {.................} {..................}
+## @multitable {..............} {..................} {...........}
 ## @item r				@tab STRUCTURE		@tab 			
-## @item __.response			@tab STRUCTURE		@tab 			
-## @item ____.code			@tab NUMERIC		@tab 			
-## @item ____.msg			@tab STRING		@tab 			
+## @item ..response			@tab STRUCTURE		@tab 			
+## @item ....code			@tab SCALAR		@tab 			
+## @item ....msg			@tab STRING		@tab 			
 ## @end multitable
 ##
-## The result is a named list containing the response of the MOSEK Optimization 
-## Library when writing to the model file. A response code of zero is the signal
+## The result is a named list containing the response of the MOSEK optimization 
+## library when writing to the model file. A response code of zero is the signal
 ## of success.
 ##
-## @multitable {...............} {............................................} 
+## @multitable {..............} {............................................} 
 ## @item r				@tab Result 
-## @item __.response			@tab Response from the MOSEK Optimization Library 
-## @item ____.code			@tab ID-code of response 
-## @item ____.msg			@tab Human-readable message 
+## @item ..response			@tab Response from the MOSEK optimization library 
+## @item ....code			@tab ID-code of response 
+## @item ....msg			@tab Human-readable message 
 ## @end multitable
 ##
 ## @sp 1
@@ -88,14 +88,14 @@
 ## @group
 ## clear -v lo1;
 ## lo1.sense = "max";
-## lo1.c = [3 1 5 1]';
+## lo1.c = [3 1 5 1];
 ## lo1.A = sparse([3 1 2 0;
 ##                 2 1 3 1;
 ##                 0 2 0 3]);
-## lo1.blc = [30 15 -inf]';
-## lo1.buc = [30 inf 25]';
-## lo1.blx = [0 0 0 0]';
-## lo1.bux = [inf 10 inf inf]';
+## lo1.blc = [30 15 -inf];
+## lo1.buc = [30 inf 25];
+## lo1.blx = [0 0 0 0];
+## lo1.bux = [inf 10 inf inf];
 ## rr = mosek_write(lo1, "lo1.opf")
 ## if (rr.response.code ~= 0)
 ##   error("Failed to write model file to current working directory");

@@ -1,9 +1,9 @@
 ## -*- texinfo -*-
 ## @deftypefn{Loadable Function} {@var{r} =} mosek (@var{problem}, @var{opts} {= struct()})
 ## 
-## >> Solve an optimization problem
+## >> Solve an optimization problem.
 ## 
-## Solve an optimization problem using the MOSEK Optimization Library. 
+## Solve an optimization problem using the MOSEK optimization library. 
 ## Please see the 'userguide.pdf' for a detailed introduction to this pacakge. 
 ## This file is located in the "doc" directory at the root of this package:
 ## @example
@@ -16,36 +16,36 @@
 ## @sp 1
 ## ========== Arguments ==========
 ## @sp 1
-## @multitable {.........................} {.................} {..........}
-## @item problem                         @tab STRUCTURE          @tab                    
-## @item __.sense                        @tab STRING             @tab                    
-## @item __.c                            @tab NUMERIC VECTOR     @tab                    
-## @item __.c0                           @tab NUMERIC            @tab (OPTIONAL)         
-## @item __.A                            @tab SPARSE MATRIX      @tab                    
-## @item __.blc                          @tab NUMERIC VECTOR     @tab                    
-## @item __.buc                          @tab NUMERIC VECTOR     @tab                    
-## @item __.blx                          @tab NUMERIC VECTOR     @tab                    
-## @item __.bux                          @tab NUMERIC VECTOR     @tab                    
-## @item __.cones                        @tab CELL               @tab (OPTIONAL)         
-## @item ____@{i@}.type                  @tab STRING             @tab                    
-## @item ____@{i@}.sub                   @tab NUMERIC VECTOR     @tab                    
-## @item __.intsub                       @tab NUMERIC VECTOR     @tab (OPTIONAL)         
-## @item __.iparam/.dparam/.sparam       @tab STRUCTURE          @tab (OPTIONAL)         
-## @item ____.<MSK_PARAM>                @tab STRING / NUMERIC   @tab (OPTIONAL)         
-## @item __.sol                          @tab STRUCTURE          @tab (OPTIONAL)         
-## @item ____.itr/.bas/.int              @tab STRUCTURE          @tab (OPTIONAL)
+## @multitable {.......................} {..................} {...........}
+## @item problem                         @tab STRUCTURE         @tab                    
+## @item ..sense                         @tab STRING            @tab                    
+## @item ..c                             @tab REAL VECTOR       @tab                    
+## @item ..c0                            @tab SCALAR            @tab (OPTIONAL)         
+## @item ..A                             @tab SPARSE MATRIX     @tab                    
+## @item ..blc                           @tab REAL VECTOR       @tab                    
+## @item ..buc                           @tab REAL VECTOR       @tab                    
+## @item ..blx                           @tab REAL VECTOR       @tab                    
+## @item ..bux                           @tab REAL VECTOR       @tab                    
+## @item ..cones                         @tab CELL              @tab (OPTIONAL)         
+## @item ....@{i@}.type                  @tab STRING            @tab                    
+## @item ....@{i@}.sub                   @tab INTEGER VECTOR    @tab                    
+## @item ..intsub                        @tab INTEGER VECTOR    @tab (OPTIONAL)         
+## @item ..iparam/dparam/sparam          @tab STRUCTURE         @tab (OPTIONAL)         
+## @item ....<MSK_PARAM>                 @tab STRING / SCALAR   @tab (OPTIONAL)         
+## @item ..sol                           @tab STRUCTURE         @tab (OPTIONAL)         
+## @item ....itr/bas/int                 @tab STRUCTURE         @tab (OPTIONAL)
 ## @end multitable
 ##
-## @multitable {.........................} {.................} {..........}
+## @multitable {.......................} {..................} {...........}
 ## @item opts                            @tab STRUCTURE          @tab (OPTIONAL)         
-## @item __.verbose                      @tab NUMERIC            @tab (OPTIONAL)         
-## @item __.usesol                       @tab BOOLEAN            @tab (OPTIONAL)         
-## @item __.useparam                     @tab BOOLEAN            @tab (OPTIONAL)         
-## @item __.writebefore                  @tab STRING (filepath)  @tab (OPTIONAL)         
-## @item __.writeafter                   @tab STRING (filepath)  @tab (OPTIONAL)         
+## @item ..verbose                       @tab SCALAR             @tab (OPTIONAL)         
+## @item ..usesol                        @tab BOOLEAN            @tab (OPTIONAL)         
+## @item ..useparam                      @tab BOOLEAN            @tab (OPTIONAL)         
+## @item ..writebefore                   @tab STRING (filepath)  @tab (OPTIONAL)         
+## @item ..writeafter                    @tab STRING (filepath)  @tab (OPTIONAL)         
 ## @end multitable
 ##
-## The optimization problem should be specified in a named list of definitions. 
+## The optimization problem should be described in a structure of definitions. 
 ## The number of variables in the problem is determined from the number of 
 ## columns in the constraint matrix @var{A}.
 ##
@@ -74,67 +74,67 @@
 ##
 ## The optimization process can be terminated at any moment using CTRL + C.
 ##
-## @multitable {.........................} {....................................} 
+## @multitable {.......................} {....................................} 
 ## @item problem                         @tab Problem description
-## @item __.sense                        @tab Objective sense, e.g. "max" or "min"
-## @item __.c                            @tab Objective coefficients
-## @item __.c0                           @tab Objective constant
-## @item __.A                            @tab Constraint matrix
-## @item __.blc                          @tab Constraint lower bounds
-## @item __.buc                          @tab Constraint upper bounds
-## @item __.blx                          @tab Variable lower bounds
-## @item __.bux                          @tab Variable upper bounds
-## @item __.cones                        @tab Conic constraints
-## @item ____@{i@}.type                  @tab Cone type 
-## @item ____@{i@}.sub                   @tab Cone variable indexes 
-## @item __.intsub                       @tab Integer variable indexes 
-## @item __.iparam/.dparam/.sparam       @tab Parameter list 
-## @item ____.<MSK_PARAM>                @tab Value of any <MSK_PARAM> 
-## @item __.sol                          @tab Initial solution list 
-## @item ____.itr/.bas/.int              @tab Initial solution description 
+## @item ..sense                         @tab Objective sense, e.g. "max" or "min"
+## @item ..c                             @tab Objective coefficients
+## @item ..c0                            @tab Objective constant
+## @item ..A                             @tab Constraint matrix
+## @item ..blc                           @tab Constraint lower bounds
+## @item ..buc                           @tab Constraint upper bounds
+## @item ..blx                           @tab Variable lower bounds
+## @item ..bux                           @tab Variable upper bounds
+## @item ..cones                         @tab Conic constraints
+## @item ....@{i@}.type                  @tab Cone type 
+## @item ....@{i@}.sub                   @tab Cone variable indexes 
+## @item ..intsub                        @tab Integer variable indexes 
+## @item ..iparam/dparam/sparam          @tab Parameter list 
+## @item ....<MSK_PARAM>                 @tab Value of any <MSK_PARAM> 
+## @item ..sol                           @tab Initial solution list 
+## @item ....itr/bas/int                 @tab Initial solution description 
 ## @end multitable
 ##
-## @multitable {.........................} {...............................................} 
+## @multitable {.......................} {...............................................} 
 ## @item opts                            @tab Options 
-## @item __.verbose                      @tab Output logging verbosity 
-## @item __.usesol                       @tab Whether to use the initial solution 
-## @item __.useparam                     @tab Whether to use the specified parameter settings 
-## @item __.writebefore                  @tab Filepath used to export model 
-## @item __.writeafter                   @tab Filepath used to export model and solution 
+## @item ..verbose                       @tab Output logging verbosity 
+## @item ..usesol                        @tab Whether to use the initial solution 
+## @item ..useparam                      @tab Whether to use the specified parameter settings 
+## @item ..writebefore                   @tab Filepath used to export model 
+## @item ..writeafter                    @tab Filepath used to export model and solution 
 ## @end multitable
 ##
 ## @sp 1
 ## ========== Value ==========
 ## @sp 1
-## @multitable {.........................} {.................} {..................}
+## @multitable {.......................} {.................} {...................}
 ## @item r				@tab STRUCTURE		@tab 			
-## @item __.response			@tab STRUCTURE		@tab 			
-## @item ____.code			@tab NUMERIC		@tab 			
-## @item ____.msg			@tab STRING		@tab 			
-## @item __.sol				@tab STRUCTURE		@tab 			
-## @item ____.itr/.bas/.int		@tab STRUCTURE		@tab (SOLVER DEPENDENT) 
-## @item ______.solsta			@tab STRING		@tab 			
-## @item ______.prosta			@tab STRING		@tab 			
-## @item ______.skx			@tab STRING VECTOR	@tab 			
-## @item ______.skc			@tab STRING VECTOR	@tab 			
-## @item ______.xx			@tab NUMERIC VECTOR	@tab 			
-## @item ______.xc			@tab NUMERIC VECTOR	@tab 			
-## @item ______.slc			@tab NUMERIC VECTOR	@tab (NOT IN .int) 	
-## @item ______.suc			@tab NUMERIC VECTOR	@tab (NOT IN .int) 	
-## @item ______.slx			@tab NUMERIC VECTOR	@tab (NOT IN .int) 	
-## @item ______.sux 			@tab NUMERIC VECTOR	@tab (NOT IN .int) 	
-## @item ______.snx 			@tab NUMERIC VECTOR	@tab (NOT IN .int/.bas) 
+## @item ..response			@tab STRUCTURE		@tab 			
+## @item ....code			@tab SCALAR		@tab 			
+## @item ....msg			@tab STRING		@tab 			
+## @item ..sol				@tab STRUCTURE		@tab 			
+## @item ....itr/bas/int		@tab STRUCTURE		@tab (SOLVER DEPENDENT) 
+## @item ......solsta			@tab STRING		@tab 			
+## @item ......prosta			@tab STRING		@tab 			
+## @item ......skx			@tab STRING VECTOR	@tab 			
+## @item ......skc			@tab STRING VECTOR	@tab 			
+## @item ......xx			@tab REAL VECTOR	@tab 			
+## @item ......xc			@tab REAL VECTOR	@tab 			
+## @item ......slc			@tab REAL VECTOR	@tab (NOT IN int) 	
+## @item ......suc			@tab REAL VECTOR	@tab (NOT IN int) 	
+## @item ......slx			@tab REAL VECTOR	@tab (NOT IN int) 	
+## @item ......sux 			@tab REAL VECTOR	@tab (NOT IN int) 	
+## @item ......snx 			@tab REAL VECTOR	@tab (NOT IN int/bas) 
 ## @end multitable
 ## 
-## The result is a named list containing the response of the MOSEK Optimization 
-## Library. A response code of zero is the signal of success.
+## The result is a named list containing the response of the MOSEK optimization 
+## library. A response code of zero is the signal of success.
 ##
 ## Depending on the specified solver, one or more solutions mays be returned. 
 ## The interior-point solution @var{itr}, the basic (corner point) solution 
 ## @var{bas}, and the integer solution @var{int}.
 ##
 ## The problem status @var{prosta} in all solutions shows the feasibility of 
-## your problem definition. All solutions are described by a solution status 
+## your problem description. All solutions are described by a solution status 
 ## @var{solsta} (e.g. optimal) along with the variable and constraint activities. 
 ## All activities will further have a bound key that specify their value 
 ## in relation to the declared bounds.
@@ -145,24 +145,24 @@
 ## would never be returned if the problem had conic constraints, and 
 ## does not define @var{snx}.
 ##
-## @multitable {.........................} {............................................} 
+## @multitable {.......................} {............................................} 
 ## @item r				@tab Result 
-## @item __.response			@tab Response from the MOSEK Optimization Library 
-## @item ____.code			@tab ID-code of response 
-## @item ____.msg			@tab Human-readable message 
-## @item __.sol				@tab All solutions identified 
-## @item ____.itr/.bas/.int		@tab Solution description 
-## @item ______.solsta			@tab Solution status 
-## @item ______.prosta			@tab Problem status  
-## @item ______.skx			@tab Variable bound keys  
-## @item ______.skc			@tab Constraint bound keys  
-## @item ______.xx			@tab Variable activities  
-## @item ______.xc			@tab Constraint activities  
-## @item ______.slc			@tab Dual variable for constraint lower bounds  
-## @item ______.suc			@tab Dual variable for constraint upper bounds  
-## @item ______.slx			@tab Dual variable for variable lower bounds  
-## @item ______.sux 			@tab Dual variable for variable lower bounds  
-## @item ______.snx 			@tab Dual variable of conic constraints 
+## @item ..response			@tab Response from the MOSEK optimization library 
+## @item ....code			@tab ID-code of response 
+## @item ....msg			@tab Human-readable message 
+## @item ..sol				@tab All solutions identified 
+## @item ....itr/bas/int		@tab Solution description 
+## @item ......solsta			@tab Solution status 
+## @item ......prosta			@tab Problem status  
+## @item ......skx			@tab Variable bound keys  
+## @item ......skc			@tab Constraint bound keys  
+## @item ......xx			@tab Variable activities  
+## @item ......xc			@tab Constraint activities  
+## @item ......slc			@tab Dual variable for constraint lower bounds  
+## @item ......suc			@tab Dual variable for constraint upper bounds  
+## @item ......slx			@tab Dual variable for variable lower bounds  
+## @item ......sux 			@tab Dual variable for variable lower bounds  
+## @item ......snx 			@tab Dual variable of conic constraints 
 ## @end multitable
 ##
 ## @sp 1
@@ -172,14 +172,14 @@
 ## @group
 ## clear -v lo1;
 ## lo1.sense = "max";
-## lo1.c = [3 1 5 1]';
+## lo1.c = [3 1 5 1];
 ## lo1.A = sparse([3 1 2 0;
 ##                 2 1 3 1;
 ##                 0 2 0 3]);
-## lo1.blc = [30 15 -inf]';
-## lo1.buc = [30 inf 25]';
-## lo1.blx = [0 0 0 0]';
-## lo1.bux = [inf 10 inf inf]';
+## lo1.blc = [30 15 -inf];
+## lo1.buc = [30 inf 25];
+## lo1.blx = [0 0 0 0];
+## lo1.bux = [inf 10 inf inf];
 ## r = mosek(lo1);
 ## @end group
 ## @end example
@@ -215,47 +215,3 @@ function r = mosek(problem, opts=struct())
   end_unwind_protect
 
 endfunction
-
-
-%% usage: r = mosek(problem, opts)                                    
-%% ------------------------------------------------------------
-%% problem                  STRUCTURE                          
-%% ..sense                  STRING                             
-%% ..c                      COLUMN VECTOR                      
-%% ..c0                     SCALAR          (OPTIONAL)         
-%% ..A                      SPARSE MATRIX                      
-%% ..blc                    COLUMN VECTOR                      
-%% ..buc                    COLUMN VECTOR                      
-%% ..blx                    COLUMN VECTOR                      
-%% ..bux                    COLUMN VECTOR                      
-%% ..cones                  CELL ARRAY      (OPTIONAL)         
-%% ....{i}.type             STRING                             
-%% ....{i}.sub              COLUMN VECTOR                      
-%% ..intsub                 COLUMN VECTOR   (OPTIONAL)         
-%% ..iparam/dparam/sparam   STRUCTURE       (OPTIONAL)         
-%% ....<MSK_PARAM>          STRING/SCALAR   (OPTIONAL)         
-%% ..sol                    STRUCTURE       (OPTIONAL)         
-%% ....itr/bas/int          STRUCTURE       (OPTIONAL)         
-%% opts                     STRUCTURE       (OPTIONAL)         
-%% ..verbose                SCALAR          (OPTIONAL)         
-%% ..usesol                 BOOLEAN         (OPTIONAL)         
-%% ..useparam               BOOLEAN         (OPTIONAL)         
-%% ..writebefore            FILEPATH        (OPTIONAL)         
-%% ..writeafter             FILEPATH        (OPTIONAL)         
-%%                                                             
-%% r                        STRUCTURE                          
-%% ..sol                    STRUCTURE                          
-%% ....itr/bas/int          STRUCTURE       (SOLVER DEPENDENT) 
-%% ......solsta             STRING                             
-%% ......prosta             STRING                             
-%% ......skx                CELL ARRAY                         
-%% ......skc                CELL ARRAY                         
-%% ......xx                 COLUMN VECTOR                      
-%% ......xc                 COLUMN VECTOR                      
-%% ......slc                COLUMN VECTOR   (NOT IN int)       
-%% ......suc                COLUMN VECTOR   (NOT IN int)       
-%% ......slx                COLUMN VECTOR   (NOT IN int)       
-%% ......sux                COLUMN VECTOR   (NOT IN int)       
-%% ......snx                COLUMN VECTOR   (NOT IN int OR bas)
-
-

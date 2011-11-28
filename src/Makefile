@@ -4,12 +4,12 @@ ifndef OCTAVE_FORGE
 	MKOCTFILE=mkoctfile
 endif
 
-SRC=__mosek__.cc
+SRC=OctMOSEK.cc
 PROGS=__mosek__.oct
 
 all: $(PROGS)
 
 __mosek__.oct: $(SRC)
-	$(MKOCTFILE) -v $(SRC) -I"$(PKG_MOSEKHOME)/h" "-L\"$(PKG_MOSEKHOME)/bin\"" -l$(PKG_MOSEKLIB)
+	$(MKOCTFILE) -v -o __mosek__.oct $(SRC) -I"$(PKG_MOSEKHOME)/h" "-L\"$(PKG_MOSEKHOME)/bin\"" -l$(PKG_MOSEKLIB)
 
 clean: ; $(RM) *.o core octave-core *.oct *~

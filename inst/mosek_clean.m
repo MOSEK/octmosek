@@ -7,7 +7,7 @@
 ## not share a limited number of licenses among multiple users, you do not need 
 ## to use this function. Notice that the acquisition of a new MOSEK license will
 ## automatically take place at the next call to the function @code{mosek} given 
-## a valid problem definition, using a small amount of extra time.
+## a valid problem description, using a small amount of extra time.
 ##
 ## @seealso{mosek}
 ##
