@@ -92,10 +92,10 @@
 ## lo1.A = sparse([3 1 2 0;
 ##                 2 1 3 1;
 ##                 0 2 0 3]);
-## lo1.blc = [30 15 -inf];
-## lo1.buc = [30 inf 25];
+## lo1.blc = [30 15 -Inf];
+## lo1.buc = [30 Inf 25];
 ## lo1.blx = [0 0 0 0];
-## lo1.bux = [inf 10 inf inf];
+## lo1.bux = [Inf 10 Inf Inf];
 ## rr = mosek_write(lo1, "lo1.opf")
 ## if (rr.response.code ~= 0)
 ##   error("Failed to write model file to current working directory");

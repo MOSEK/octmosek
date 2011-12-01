@@ -94,7 +94,7 @@ endif
 # CHECK THAT WE HAVE ALL WE NEED
 #
 if (!isValid(PKG_MOSEKHOME) && !isValid(PKG_MOSEKLIB))
-  disp("*** No variable 'PKG_MOSEKHOME' in octave environment ***");
+  disp("*** No variable 'PKG_MOSEKHOME' in Octave environment ***");
   disp(cstrcat("*** No variable 'PKG_MOSEKHOME' in ",LocalsysPath," file ***"));
   
   if (isWindows) 
@@ -103,17 +103,17 @@ if (!isValid(PKG_MOSEKHOME) && !isValid(PKG_MOSEKLIB))
     disp("*** Could not guess variable 'PKG_MOSEKHOME' from command 'mosek' in Windows CMD ***");
   endif
   
-  error();
+  error("The package could not be configured.");
 endif
 
 if !isValid(PKG_MOSEKHOME)
   disp("*** Variable 'PKG_MOSEKHOME' was not found here ***");
-  error();
+  error("The package could not be configured.");
 endif
 
 if !isValid(PKG_MOSEKLIB)
   disp("*** Variable 'PKG_MOSEKLIB' was not found here ***");
-  error();
+  error("The package could not be configured.");
 endif
 
 
@@ -126,7 +126,7 @@ endif
 
 if (exist(PKG_MOSEKHOME, "dir") != 7)
   disp(cstrcat("*** Variable 'PKG_MOSEKHOME' is not a directory: ",PKG_MOSEKHOME," ***"));
-  error();
+  error("The package could not be configured.");
 endif 
 
 
