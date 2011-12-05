@@ -12,8 +12,7 @@
 
 function r = mosek_version()
 
-  if (nargout > 1)
-    printf("Invalid number of output arguments\n");
+  if (nargin > 0 || nargout > 1)
     print_usage();
   endif
 

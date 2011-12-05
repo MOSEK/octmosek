@@ -15,8 +15,7 @@
 
 function mosek_clean()
 
-  if (nargout > 0)
-    printf("Invalid number of output arguments\n");
+  if (nargin > 0 || nargout > 1)
     print_usage();
   endif
 

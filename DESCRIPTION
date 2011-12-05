@@ -1,6 +1,6 @@
 Name: OctMOSEK
-Version: 0.9.1
-Date: 2011-03-07
+Version: 0.9.2
+Date: 2011-12-02
 Title: The Octave-to-MOSEK Optimization Interface
 Author: Henrik Alsing Friberg
 Maintainer: Henrik Alsing Friberg <haf@mosek.com>

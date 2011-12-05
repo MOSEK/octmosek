@@ -190,13 +190,7 @@
 
 function r = mosek(problem, opts=struct())
 
-  if (nargin < 1)
-    printf("Invalid number of input arguments\n");
-    print_usage();
-  endif
-
-  if (nargout > 1)
-    printf("Invalid number of output arguments\n");
+  if (nargin < 1 || nargin > 2 || nargout > 1)
     print_usage();
   endif
 

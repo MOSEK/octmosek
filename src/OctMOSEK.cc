@@ -351,7 +351,7 @@ public:
 void map_seek_Value(octave_value *out, Octave_map map, string name, bool optional=false)
 {
 	Octave_map::const_iterator iter = map.seek(name);
-	if (iter != map.end())
+	if (iter != map.end() && map.contents(iter).length() >= 1)
 		*out = map.contents(iter)(0);
 	else if (!optional)
 		throw msk_exception("An expected variable named '" + name + "' was not found");
