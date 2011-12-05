@@ -14,12 +14,13 @@
 ## this path should contain a "bin" and a "h" folder.
 ## ----------------------------------------------------------------------
 ## For example you can write:
-##    PKG_MOSEKHOME=C:\Progra~2\Mosek\6\tools\platform\win32x86
+##    PKG_MOSEKHOME="~/mosek/6/tools/platform/linux32x86";
 ##
 ## If your computer contains the two directories:
-##    C:\Progra~2\Mosek\6\tools\platform\win32x86\bin
-##    C:\Progra~2\Mosek\6\tools\platform\win32x86\h
+##    ~/mosek/6/tools/platform/linux32x86/bin
+##    ~/mosek/6/tools/platform/linux32x86/h
 ## ----------------------------------------------------------------------
+##
 
 PKG_MOSEKHOME="[MOSEK_HOME_PATH]";
 
@@ -29,14 +30,20 @@ PKG_MOSEKHOME="[MOSEK_HOME_PATH]";
 ##################
 ## Please substitute [MOSEK_LIB_FILE] below, with the name of the library you 
 ## wish to use within the "bin" folder of your PKG_MOSEKHOME path. Note that 
-## this "bin" folder must contain a file called [MOSEK_LIB_FILE].lib.
+## this "bin" folder must contain a file called lib[MOSEK_LIB_FILE].so or .dylib.
 ## ----------------------------------------------------------------------
 ## Continuing the example from above, you can write:
-##    PKG_MOSEKLIB=mosek6_0
+##    PKG_MOSEKLIB="mosek";
 ##
 ## If your computer contains the file:
-##    C:\Progra~2\Mosek\6\tools\platform\win32x86\bin\mosek6_0.lib
+##    ~/mosek/6/tools/platform/linux32x86/bin/libmosek.so
+##
+## or
+##    ~/mosek/6/tools/platform/linux32x86/bin/libmosek.dylib
+##
+## depending on your Unix-alike system.
 ## ----------------------------------------------------------------------
+##
 
 PKG_MOSEKLIB="[MOSEK_LIB_FILE]";
 
