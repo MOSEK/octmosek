@@ -1,18 +1,20 @@
 function pre_install(desc = 0)
 
-# TODO: Which is better?
-# systemtype = upper(computer());
-# isWindows = !isempty(findstr("MINGW", systemtype));
+platformtype = computer();
 systemtype = upper(getenv("OS"));
 isWindows = !isempty(findstr("WINDOWS", systemtype));
 
 if (isWindows) 
-  disp("Configuring for the WINDOWS platform");
+  disp(cstrcat("Configuring for the WINDOWS platform (", platformtype, ")"));
 else
-  disp("Configuring for a UNIX-alike platform");
+  disp(cstrcat("Configuring for a UNIX-alike platform (", platformtype, ")"));
 endif
 
-LocalsysPath = strcat("./src/", systemtype, "/Localsys.m");
+if (isempty(platformtype))
+  LocalsysPath = strcat("./src/setup/Localsys.m");
+else
+  LocalsysPath = strcat("./src/setup/", platformtype, "/Localsys.m");
+endif
 
 #
 # ATTEMPT 1: READ CONFIGURATION FROM ENVIRONMENT
@@ -54,6 +56,15 @@ if (!isValid(PKG_MOSEKHOME) && !isValid(PKG_MOSEKLIB))
   
   if (sys_status == 0)
     PKG_MOSEKEXE = strsplit(sys_output,"\n"){1};
+
+    # Try to follow symbolic links
+    if (!isWindows)
+      [res,status] = readlink(PKG_MOSEKEXE);
+      if (status == 0)
+        PKG_MOSEKEXE = res;
+      endif
+    endif
+
     PKG_MOSEKHOME = fileparts(fileparts(PKG_MOSEKEXE));
     
     if (isWindows) 
@@ -98,9 +109,9 @@ if (!isValid(PKG_MOSEKHOME) && !isValid(PKG_MOSEKLIB))
   disp(cstrcat("*** No variable 'PKG_MOSEKHOME' in ",LocalsysPath," file ***"));
   
   if (isWindows) 
-    disp("*** Could not guess variable 'PKG_MOSEKHOME' from shell command 'mosek' ***");
-  else
     disp("*** Could not guess variable 'PKG_MOSEKHOME' from command 'mosek' in Windows CMD ***");
+  else
+    disp("*** Could not guess variable 'PKG_MOSEKHOME' from shell command 'mosek' ***");
   endif
   
   error("The package could not be configured.");
