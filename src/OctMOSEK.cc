@@ -43,6 +43,9 @@
 #include <stdexcept>
 #include <octave/Matrix.h>
 
+//FIXME: REMOVE
+#include <new>
+
 using namespace std;
 
 // Global initialization
@@ -65,14 +68,8 @@ string msk_responsecode2text(MSKrescodee r) {
 }
 
 struct msk_response {
-public:
 	double code;
 	string msg;
-
-	msk_response(MSKrescodee r) {
-		code = (double)r;
-		msg = msk_responsecode2text(r);
-	}
 
 	msk_response(const string &msg) :
 		code(NAN), msg(msg) {}
@@ -82,7 +79,6 @@ public:
 };
 
 struct msk_exception : public runtime_error {
-public:
 	const double code;
 
 	// Used for MOSEK errors with response codes
@@ -97,6 +93,10 @@ public:
 		return msk_response(code, what());
 	}
 };
+
+msk_response get_msk_response(MSKrescodee r) {
+	return msk_response(static_cast<double>(r), msk_responsecode2text(r));
+}
 
 // ------------------------------
 // PRINTING SYSTEM
@@ -139,16 +139,21 @@ void printdebugdata(string str) {
 	printoutput(str, typeDEBUG);
 }
 
+void delete_all_pendingmsg() {
+	mosek_pendingmsg_str.clear();
+	mosek_pendingmsg_type.clear();
+}
+
 void printpendingmsg() {
-	if (mosek_pendingmsg_str.size() != mosek_pendingmsg_type.size())
+	if (mosek_pendingmsg_str.size() != mosek_pendingmsg_type.size()) {
+		delete_all_pendingmsg();
 		throw msk_exception("Error in handling of pending messages");
+	}
 
 	for (size_t i=0; i<mosek_pendingmsg_str.size(); i++) {
 		printoutput(mosek_pendingmsg_str[i], mosek_pendingmsg_type[i]);
 	}
-
-	mosek_pendingmsg_str.clear();
-	mosek_pendingmsg_type.clear();
+	delete_all_pendingmsg();
 }
 
 // This function translates MOSEK response codes into msk_exceptions.
@@ -157,7 +162,7 @@ void errcatch(MSKrescodee r, string str) {
 		if (!str.empty())
 			printerror(str);
 
-		throw msk_exception(r);
+		throw msk_exception(get_msk_response(r));
 	}
 }
 void errcatch(MSKrescodee r) {
@@ -168,7 +173,8 @@ void errcatch(MSKrescodee r) {
 // OCTAVE HELPERS
 // ------------------------------
 
-octave_value empty_octave_value = octave_value(octave_value_list());
+//octave_value empty_octave_value = octave_value(octave_value_list());
+const octave_value empty_octave_value = octave_value(Octave_map());
 
 template <class T>
 string tostring(T val)
@@ -1210,21 +1216,16 @@ void msk_getsolution(Octave_map &solvec, MSKtask_t task)
 
 void msk_addresponse(Octave_map &ret_val, const msk_response &res, bool overwrite=true) {
 
-	// Construct: result -> response
-	Octave_map res_vec;
+	// Using overwrite=false, the MSK_RES_OK can be added only if no other response exists.
+	// Using overwrite=true, errors which calls for immediate exit can overwrite the regular response.
+	if (ret_val.contains("response") && !overwrite)
+		return;
 
+	Octave_map res_vec;
 	res_vec.assign("code", octave_value(res.code));
 	res_vec.assign("msg", octave_value(res.msg, '\"'));
 
-	// Append to result and overwrite if structure already exists
-	// In this way errors, which calls for immediate exit, can overwrite the regular termination code..
-	if (ret_val.contains("response")) {
-		if (overwrite) {
-			ret_val.assign("response", octave_value(res_vec));
-		}
-	} else {
-		ret_val.assign("response", octave_value(res_vec));
-	}
+	ret_val.assign("response", octave_value(res_vec));
 }
 
 /* This function initialize the task and sets up the problem. */
@@ -1993,10 +1994,10 @@ void msk_solve(Octave_map &ret_val, Task_handle &task, options_type options)
 		/* Run optimizer */
 		MSKrescodee trmcode;
 		errcatch( MSK_optimizetrm(task, &trmcode) );
-		msk_addresponse(ret_val, msk_response(trmcode));
+		msk_addresponse(ret_val, get_msk_response(trmcode));
 
 	} catch (exception const& e) {
-		// Report that the CTRL+C interruption has been handled
+		// Report that the CTRL+C interruption has been caught
 		if (octave_signal_caught) {
 
 			// TODO: FIND A WAY TO ACHIEVE SOMETHING LIKE THIS:
@@ -2043,13 +2044,59 @@ void msk_solve(Octave_map &ret_val, Task_handle &task, options_type options)
 	}
 }
 
-void reset_globalvariables() {
+void reset_global_ressources() {
+	// The mosek environment 'global_env' should not be cleared, as we wish to
+	// reuse the license until mosek_clean() is called or .SO/.DLL is unloaded.
+
+	delete_all_pendingmsg();
+}
+
+void reset_global_variables() {
 	mosek_interface_verbose  = NAN;   	// Declare messages as pending
 	mosek_interface_warnings = 0;
 
-	// TODO: FIND A WAY TO AVOID THIS (see previous TODO on 'octave_signal_caught')
-	if (octave_signal_caught)
+	set_global_value("Rmosek", empty_octave_value);
+}
+
+void terminate_successfully(Octave_map &ret_val) /* nothrow */ {
+	try {
+		msk_addresponse(ret_val, get_msk_response(MSK_RES_OK), false);
+		reset_global_ressources();
+	}
+	catch (exception const& e) { /* Just terminate.. */ }
+
+	// The Octave API force us to quit without return value if signals have been caught.
+	// See the TODO on 'octave_signal_caught'.
+	try {
 		OCTAVE_QUIT;
+	} catch (octave_interrupt_exception const& e) {
+		set_global_value("Rmosek", ret_val);
+		printinfo("Results saved to global variable 'Rmosek'");
+		throw; // this is important!!
+	}
+}
+
+void terminate_unsuccessfully(Octave_map &ret_val, const msk_exception &e) /* nothrow */ {
+	try {
+		// Force pending and future messages through
+		if (isnan(mosek_interface_verbose)) {
+			mosek_interface_verbose = typeALL;
+			printoutput("----- PENDING MESSAGES -----\n", typeERROR);
+		}
+		printpendingmsg();
+		printerror( e.what() );
+
+		msk_addresponse(ret_val, e.getresponse(), true);
+	}
+	catch (exception const& e) { /* Just terminate.. */ }
+	terminate_successfully(ret_val);
+}
+
+void terminate_unsuccessfully(Octave_map &ret_val, const char* msg) /* nothrow */ {
+	try {
+		terminate_unsuccessfully(ret_val, msk_exception(msk_response(string(msg))));
+	}
+	catch (exception const& e) { /* Just terminate.. */ }
 }
 
 void init_early_exit(const char* msg) {
@@ -2059,7 +2106,7 @@ void init_early_exit(const char* msg) {
 	}
 	printpendingmsg();
 	printerror(msg);
-	reset_globalvariables();
+	reset_global_variables();
 }
 
 // ------------------------------
@@ -2073,28 +2120,22 @@ INTERNAL FUNCTION: __mosek__ 								\n\
 ") {
 	const string ARGNAMES[] = {"problem","options"};
 	const string ARGTYPES[] = {"struct","struct"};
-	const int num_min_args = 1;
-	const int num_max_args = 2;
 
 	// Create structure for returned data
 	Octave_map ret_val;
 
 	try {
 		// Start the program
-		reset_globalvariables();
+		reset_global_variables();
+		printdebug("Function 'mosek' was called");
 
 		// Validate input arguments
-		if (args.length() < num_min_args) {
-			print_usage();
-			throw msk_exception("Wrong number of input arguments, should be at least " + tostring(num_min_args) + ".");
-		}
-		if (args.length() > num_max_args) {
-			print_usage();
-			throw msk_exception("Wrong number of input arguments, should be at most " + tostring(num_max_args) + ".");
-		}
-		Octave_map arg0 = args(0).map_value();
-		if (error_state) {
-			throw msk_exception("Input argument " + ARGNAMES[0] + " should be a " + ARGTYPES[0] + ".");
+		Octave_map arg0;
+		if (!args.empty()) {
+			arg0 = args(0).map_value();
+			if (error_state) {
+				throw msk_exception("Input argument " + ARGNAMES[0] + " should be a " + ARGTYPES[0] + ".");
+			}
 		}
 		Octave_map arg1;
 		if (args.length()-1 >= 1) {
@@ -2116,22 +2157,22 @@ INTERNAL FUNCTION: __mosek__ 								\n\
 		// Solve the problem
 		msk_solve(ret_val, task, probin.options);
 
+		// Print warning summary
+		if (mosek_interface_warnings > 0) {
+			printoutput("The Octave-to-MOSEK interface completed with " + tostring(mosek_interface_warnings) + " warning(s)\n\n", typeWARNING);
+		}
+
 	} catch (msk_exception const& e) {
-		init_early_exit(e.what());
- 		msk_addresponse(ret_val, e.getresponse());
+ 		terminate_unsuccessfully(ret_val, e);
 		return octave_value(ret_val);
 
 	} catch (exception const& e) {
-		init_early_exit(e.what());
+		terminate_unsuccessfully(ret_val, e.what());
 		return octave_value(ret_val);
 	}
 
-	if (mosek_interface_warnings > 0) {
-		printoutput("The Octave-to-MOSEK interface completed with " + tostring(mosek_interface_warnings) + " warning(s)\n\n", typeWARNING);
-	}
-
-	// Clean and exit
-	reset_globalvariables();
+	// Clean allocations and exit (msk_solve adds response)
+	terminate_successfully(ret_val);
 	return octave_value(ret_val);
 }
 
@@ -2141,20 +2182,15 @@ mosek_clean()                                               \n\
 The use of internal functions is not encouraged.            \n\
 INTERNAL FUNCTION: __mosek_clean__                          \n\
 ") {
-	// TODO: Should we read verbose from an 'opts' input argument?
-	mosek_interface_verbose = typeALL;
+	// The mosek_clean function use verbose=typeINFO by default (should we read options?)
+	reset_global_variables();
+	mosek_interface_verbose = typeINFO;
 
-	// Clean resources such as tasks before the environment!
+	// Clean global resources and release the MOSEK environment
+	reset_global_ressources();
 	global_env.~Env_handle();
 
-	reset_globalvariables();
 	return empty_octave_value;
-
-//	// TODO: Should we add the response code?
-//	Octave_map ret_val;
-//	msk_addresponse(ret_val, msk_response(MSK_RES_OK), false);
-//	reset_globalvariables();
-//	return octave_value(ret_val);
 }
 
 
@@ -2167,7 +2203,7 @@ INTERNAL FUNCTION: __mosek_version__                        \n\
 	MSKintt major, minor, build, revision;
 	MSK_getversion(&major, &minor, &build, &revision);
 
-	// Output
+	// Construct output
 	string ret_val("MOSEK " + tostring(major) + "." +  tostring(minor) + "." + tostring(build) + "." + tostring(revision));
 	return octave_value(ret_val, '\"');
 }
@@ -2180,28 +2216,22 @@ INTERNAL FUNCTION: __mosek_read__                           \n\
 ") {
 	const string ARGNAMES[] = {"filepath","options"};
 	const string ARGTYPES[] = {"string","struct"};
-	const int num_min_args = 1;
-	const int num_max_args = 2;
 
 	// Create structure for returned data
 	Octave_map ret_val;
 
 	try {
 		// Start the program
-		reset_globalvariables();
+		reset_global_variables();
+		printdebug("Function 'mosek_read' was called");
 
 		// Validate input arguments
-		if (args.length() < num_min_args) {
-			print_usage();
-			throw msk_exception("Wrong number of input arguments, should be at least " + tostring(num_min_args) + ".");
-		}
-		if (args.length() > num_max_args) {
-			print_usage();
-			throw msk_exception("Wrong number of input arguments, should be at most " + tostring(num_max_args) + ".");
-		}
-		string arg0 = args(0).string_value();
-		if (error_state) {
-			throw msk_exception("Input argument " + ARGNAMES[0] + " should be a " + ARGTYPES[0] + ".");
+		string arg0;
+		if (!args.empty()) {
+			arg0 = args(0).string_value();
+			if (error_state) {
+				throw msk_exception("Input argument " + ARGNAMES[0] + " should be a " + ARGTYPES[0] + ".");
+			}
 		}
 		Octave_map arg1;
 		if (args.length()-1 >= 1) {
@@ -2235,24 +2265,24 @@ INTERNAL FUNCTION: __mosek_read__                           \n\
 		ret_val.assign("prob", octave_value(prob_val));
 
 		// Add the response code
-		msk_addresponse(ret_val, msk_response(MSK_RES_OK), false);
+		msk_addresponse(ret_val, get_msk_response(MSK_RES_OK), false);
+
+		// Print warning summary
+		if (mosek_interface_warnings > 0) {
+			printoutput("The Octave-to-MOSEK interface completed with " + tostring(mosek_interface_warnings) + " warning(s)\n", typeWARNING);
+		}
 
 	} catch (msk_exception const& e) {
-		init_early_exit(e.what());
-		msk_addresponse(ret_val, e.getresponse());
+		terminate_unsuccessfully(ret_val, e);
 		return octave_value(ret_val);
 
 	} catch (exception const& e) {
-		init_early_exit(e.what());
+		terminate_unsuccessfully(ret_val, e.what());
 		return octave_value(ret_val);
 	}
 
-	if (mosek_interface_warnings > 0) {
-		printoutput("The Octave-to-MOSEK interface completed with " + tostring(mosek_interface_warnings) + " warning(s)\n", typeWARNING);
-	}
-
-	// Clean and exit
-	reset_globalvariables();
+	// Clean allocations, add response and exit
+	terminate_successfully(ret_val);
 	return octave_value(ret_val);
 }
 
@@ -2264,32 +2294,29 @@ INTERNAL FUNCTION: __mosek_write__                          \n\
 ") {
 	const string ARGNAMES[] = {"problem","filepath","options"};
 	const string ARGTYPES[] = {"struct","string","struct"};
-	const int num_min_args = 2;
-	const int num_max_args = 3;
 
 	// Create structure for returned data
 	Octave_map ret_val;
 
 	try {
 		// Start the program
-		reset_globalvariables();
+		reset_global_variables();
+		printdebug("Function 'mosek_write' was called");
 
 		// Validate input arguments
-		if (args.length() < num_min_args) {
-			print_usage();
-			throw msk_exception("Wrong number of input arguments, should be at least " + tostring(num_min_args) + ".");
+		Octave_map arg0;
+		if (!args.empty()) {
+			arg0 = args(0).map_value();
+			if (error_state) {
+				throw msk_exception("Input argument " + ARGNAMES[0] + " should be a " + ARGTYPES[0] + ".");
+			}
 		}
-		if (args.length() > num_max_args) {
-			print_usage();
-			throw msk_exception("Wrong number of input arguments, should be at most " + tostring(num_max_args) + ".");
-		}
-		Octave_map arg0 = args(0).map_value();
-		if (error_state) {
-			throw msk_exception("Input argument " + ARGNAMES[0] + " should be a " + ARGTYPES[0] + ".");
-		}
-		string arg1 = args(1).string_value();
-		if (error_state) {
-			throw msk_exception("Input argument " + ARGNAMES[1] + " should be a " + ARGTYPES[1] + ".");
+		string arg1;
+		if (args.length()-1 >= 1) {
+			arg1 = args(1).string_value();
+			if (error_state) {
+				throw msk_exception("Input argument " + ARGNAMES[1] + " should be a " + ARGTYPES[1] + ".");
+			}
 		}
 		Octave_map arg2;
 		if (args.length()-1 >= 2) {
@@ -2335,23 +2362,23 @@ INTERNAL FUNCTION: __mosek_write__                          \n\
 		errcatch( MSK_writedata(task, const_cast<MSKCONST char*>(arg1.c_str())) );
 
 		// Add the response code
-		msk_addresponse(ret_val, msk_response(MSK_RES_OK), false);
+		msk_addresponse(ret_val, get_msk_response(MSK_RES_OK), false);
+
+		// Print warning summary
+		if (mosek_interface_warnings > 0) {
+			printoutput("The Octave-to-MOSEK interface completed with " + tostring(mosek_interface_warnings) + " warning(s)\n", typeWARNING);
+		}
 
 	} catch (msk_exception const& e) {
-		init_early_exit(e.what());
-		msk_addresponse(ret_val, e.getresponse());
+		terminate_unsuccessfully(ret_val, e);
 		return octave_value(ret_val);
 
 	} catch (exception const& e) {
-		init_early_exit(e.what());
+		terminate_unsuccessfully(ret_val, e.what());
 		return octave_value(ret_val);
 	}
 
-	if (mosek_interface_warnings > 0) {
-		printoutput("The Octave-to-MOSEK interface completed with " + tostring(mosek_interface_warnings) + " warning(s)\n", typeWARNING);
-	}
-
-	// Clean and exit
-	reset_globalvariables();
+	// Clean allocations, add response and exit
+	terminate_successfully(ret_val);
 	return octave_value(ret_val);
 }
