@@ -34,7 +34,6 @@
 
 #include "omsk_msg_mosek.h"
 #include "omsk_utils_interface.h"
-#include "omsk_utils_mosek.h"
 #include "omsk_obj_arguments.h"
 #include "omsk_obj_mosek.h"
 
