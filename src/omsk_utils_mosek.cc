@@ -301,7 +301,8 @@ void get_str_parameters(Octave_map &paramvec, MSKtask_t task)
 		size_t strlength;
 		errcatch( MSK_getstrparam(task, static_cast<MSKsparame>(v), 0, &strlength, NULL) );
 
-		value = new char[strlength];
+		// Terminating null-character not counted by 'MSK_getstrparam'
+		value = new char[++strlength];
 		try {
 			// Get value of parameter
 			errcatch( MSK_getstrparam(task, static_cast<MSKsparame>(v), strlength, NULL, value) );
