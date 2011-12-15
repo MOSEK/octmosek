@@ -12,7 +12,7 @@ private:
 	bool initialized;
 
 public:
-	// Recognised second order cone arguments in R
+	// Recognised second order cone arguments in Octave
 	// TODO: Upgrade to new C++11 initialisers
 	struct ITEMS_type {
 		static const struct OCT_ARGS_type {
@@ -32,7 +32,7 @@ public:
 	} ITEMS;
 
 
-	// Data definition (intentionally kept close to R types)
+	// Data definition (intentionally kept close to Octave types)
 	MSKintt numcones;
 	Cell cones;
 

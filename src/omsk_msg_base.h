@@ -5,7 +5,7 @@
 #include <octave/ov-struct.h>
 
 #include <string>
-#include <ostream>
+#include <sstream>
 #include <stdexcept>
 
 extern double mosek_interface_verbose;

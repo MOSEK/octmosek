@@ -14,7 +14,7 @@
 // MOSEK-UTILS
 // ------------------------------
 
-// Convert objective sense to and from MOSEK and R
+// Convert objective sense to and from MOSEK and Octave
 std::string get_objective(MSKobjsensee sense);
 MSKobjsensee get_mskobjective(std::string sense);
 
