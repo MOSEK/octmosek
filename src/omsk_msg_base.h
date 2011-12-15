@@ -75,4 +75,22 @@ std::string tostring(T val)
 	return ss.str();
 }
 
+// TODO: Upgrade to new C++11 unique_ptr
+template<class T>
+class auto_array {
+private:
+	T* arr;
+
+public:
+	operator T*() { return arr; }
+
+	explicit auto_array(T *obj = NULL)
+		: arr(obj) {}
+
+	~auto_array() {
+		if (arr != NULL)
+			delete[] arr;
+	}
+};
+
 #endif /* OMSK_MSG_BASE_H_ */

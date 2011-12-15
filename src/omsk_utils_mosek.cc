@@ -7,8 +7,15 @@
 #include <string>
 #include <exception>
 
+//FIXME
+#include <memory>
+#include <vector>
+
 using std::string;
 using std::exception;
+
+using std::auto_ptr;
+using std::vector;
 
 
 // ------------------------------
@@ -114,33 +121,26 @@ void set_boundkey(double bl, double bu, MSKboundkeye *bk)
 
 void get_boundvalues(MSKtask_t task, double *lower, double* upper, MSKaccmodee boundtype, MSKintt numbounds)
 {
-	MSKboundkeye *bk = new MSKboundkeye[numbounds];
-	try {
+	auto_array<MSKboundkeye> bk( new MSKboundkeye[numbounds] );
 
-		errcatch( MSK_getboundslice(task, boundtype, 0, numbounds, bk, lower, upper) );
+	// Get bound keys from MOSEK
+	errcatch( MSK_getboundslice(task, boundtype, 0, numbounds, bk, lower, upper) );
 
-		for (MSKintt i=0; i<numbounds; i++) {
-			switch (bk[i]) {
-				case MSK_BK_FR:
-					lower[i] = -INFINITY;
-					upper[i] = INFINITY;
-					break;
-				case MSK_BK_LO:
-					upper[i] = INFINITY;
-					break;
-				case MSK_BK_UP:
-					lower[i] = -INFINITY;
-					break;
-				default:
-					break;
-			}
+	for (MSKintt i=0; i<numbounds; i++) {
+		switch (bk[i]) {
+			case MSK_BK_FR:
+				lower[i] = -INFINITY;
+				upper[i] = INFINITY;
+				break;
+			case MSK_BK_LO:
+				upper[i] = INFINITY;
+				break;
+			case MSK_BK_UP:
+				lower[i] = -INFINITY;
+				break;
+			default:
+				break;
 		}
-
-	} catch (exception const& e) {
-		delete[] bk;
-		throw;
-	} /* OTHERWISE */ {
-		delete[] bk;
 	}
 }
 
@@ -288,7 +288,7 @@ void get_dou_parameters(Octave_map &paramvec, MSKtask_t task)
 
 void get_str_parameters(Octave_map &paramvec, MSKtask_t task)
 {
-	char paramname[MSK_MAX_STR_LEN];	char *value;
+	char paramname[MSK_MAX_STR_LEN];
 	for (int v=MSK_SPAR_BEGIN; v<MSK_SPAR_END; ++v) {
 
 		// Get name of parameter
@@ -302,20 +302,14 @@ void get_str_parameters(Octave_map &paramvec, MSKtask_t task)
 		errcatch( MSK_getstrparam(task, static_cast<MSKsparame>(v), 0, &strlength, NULL) );
 
 		// Terminating null-character not counted by 'MSK_getstrparam'
-		value = new char[++strlength];
-		try {
-			// Get value of parameter
-			errcatch( MSK_getstrparam(task, static_cast<MSKsparame>(v), strlength, NULL, value) );
+		++strlength;
 
-			// Append parameter to list
-			paramvec.assign(paramstr, octave_value(value, '\"'));
+		// Get value of parameter
+		auto_array<char> value ( new char[strlength] );
+		errcatch( MSK_getstrparam(task, static_cast<MSKsparame>(v), strlength, NULL, value) );
 
-		} catch (exception const& e) {
-			delete[] value;
-			throw;
-		} /* OTHERWISE */ {
-			delete[] value;
-		}
+		// Append parameter to list
+		paramvec.assign(paramstr, octave_value(value, '\"'));
 	}
 }
 
@@ -463,7 +457,8 @@ void msk_getsolution(Octave_map &solvec, MSKtask_t task)
 
 		// Add the constraint status keys
 		{
-			MSKstakeye *mskskc = new MSKstakeye[NUMCON];
+			auto_array<MSKstakeye> mskskc ( new MSKstakeye[NUMCON] );
+
 			errcatch( MSK_getsolutionstatuskeyslice(task,
 									MSK_ACC_CON,	/* Request constraint status keys. */
 									stype,			/* Current solution type. */
@@ -482,7 +477,8 @@ void msk_getsolution(Octave_map &solvec, MSKtask_t task)
 
 		// Add the variable status keys
 		{
-			MSKstakeye *mskskx = new MSKstakeye[NUMVAR];
+			auto_array<MSKstakeye> mskskx ( new MSKstakeye[NUMVAR] );
+
 			errcatch( MSK_getsolutionstatuskeyslice(task,
 									MSK_ACC_VAR,	/* Request variable status keys. */
 									stype,			/* Current solution type. */
