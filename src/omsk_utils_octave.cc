@@ -18,7 +18,7 @@ bool isEmpty(octave_value& obj) {
 
 	// Also count NA and NaN as empty
 	if (obj.is_scalar_type()) {
-		if (isnan(obj.scalar_value()))
+		if (xisnan(obj.scalar_value()))
 			if (!error_state)
 				return true;
 	}

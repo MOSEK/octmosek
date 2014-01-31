@@ -48,7 +48,7 @@ void terminate_successfully(Octave_map &ret_val) /* nothrow */ {
 void terminate_unsuccessfully(Octave_map &ret_val, const msk_exception &e) /* nothrow */ {
 	try {
 		// Force pending and future messages through
-		if (isnan(mosek_interface_verbose)) {
+		if (xisnan(mosek_interface_verbose)) {
 			mosek_interface_verbose = typeALL;
 			printoutput("----- PENDING MESSAGES -----\n", typeERROR);
 		}

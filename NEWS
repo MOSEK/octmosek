@@ -1,0 +1,7 @@
+OctMOSEK News
+
+CHANGES IN OctMOSEK VERSION 0.9.5:
+
+  Fixed autocomfiguration on Windows platforms,
+  Changed to xisinf and xisnan to check NaN and INF status of octave values.
+

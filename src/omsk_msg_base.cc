@@ -21,7 +21,7 @@ vector<string>      mosek_pendingmsg_str;
 vector<verbosetype> mosek_pendingmsg_type;
 
 void printoutput(string str, verbosetype strtype) {
-	if (isnan(mosek_interface_verbose)) {
+	if (xisnan(mosek_interface_verbose)) {
 		mosek_pendingmsg_str.push_back(str);
 		mosek_pendingmsg_type.push_back(strtype);
 
@@ -93,7 +93,7 @@ bool ispos(double x) {
 
 /* This function converts from the normal double type to integers (supports infinity) */
 int scalar2int(double scalar) {
-	if (isinf(scalar))
+	if (xisinf(scalar))
 		return INT_MAX;
 
 	int retval = (int)scalar;

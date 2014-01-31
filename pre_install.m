@@ -74,12 +74,12 @@ if (!isValid(PKG_MOSEKHOME) && !isValid(PKG_MOSEKLIB))
     endif
     
     if (sys_status == 0)
-      PKG_MOSEKLIBPATHS = strsplit(sys_output,"\n");
+      PKG_MOSEKLIBPATHS = deblank(strsplit(sys_output,"\n"));
     
       if (isWindows)
-        [ans,ans,ans,ans,moseklib_postfix] = regexp(PKG_MOSEKLIBPATHS, "mosek([0-9_]*).lib*$");
+        [ans,ans,ans,ans,moseklib_postfix] = regexp(PKG_MOSEKLIBPATHS, "mosek([0-9_]*)[.]lib$");
       else
-        [ans,ans,ans,ans,moseklib_postfix] = regexp(PKG_MOSEKLIBPATHS, "libmosek([0-9_]*).(so|dylib)*$");
+        [ans,ans,ans,ans,moseklib_postfix] = regexp(PKG_MOSEKLIBPATHS, "libmosek([0-9_]*)[.](so|dylib)$");
       endif
       
       for ID = moseklib_postfix

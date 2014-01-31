@@ -83,29 +83,29 @@ void remove_mskprefix(string &str, string prefix)
 /* This function checks and sets the bounds of constraints and variables. */
 void set_boundkey(double bl, double bu, MSKboundkeye *bk)
 {
-	if (isnan(bl) || isnan(bu))
+	if (xisnan(bl) || xisnan(bu))
 		throw msk_exception("NAN values not allowed in bounds");
 
-	if (!isinf(bl) && !isinf(bu) && bl > bu)
+	if (!xisinf(bl) && !xisinf(bu) && bl > bu)
 		throw msk_exception("The upper bound should be larger than the lower bound");
 
-	if (isinf(bl) && ispos(bl))
+	if (xisinf(bl) && ispos(bl))
 		throw msk_exception("+INF values not allowed as lower bound");
 
-	if (isinf(bu) && !ispos(bu))
+	if (xisinf(bu) && !ispos(bu))
 		throw msk_exception("-INF values not allowed as upper bound");
 
 	// Return the bound key
-	if (isinf(bl))
+	if (xisinf(bl))
 	{
-		if (isinf(bu))
+		if (xisinf(bu))
 			*bk = MSK_BK_FR;
 		else
 			*bk = MSK_BK_UP;
 	}
 	else
 	{
-		if (isinf(bu))
+		if (xisinf(bu))
 			*bk = MSK_BK_LO;
 		else
 		{
