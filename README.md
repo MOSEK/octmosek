@@ -10,14 +10,14 @@ The Octave-to-MOSEK Optimization Interface is designed to make the optimization 
   * Second-Order Cone Programming (SOCP)
   * And all the above with Mixed-Integer variables..
 
-Note that the MOSEK libraries ships with [trial and academic licenses](http://www.mosek.com/resources/trial/) free of charge, but is otherwise a proprietary product. 
+Note that the MOSEK libraries ships with [trial](http://mosek.com/resources/trial-license) and [academic](http://mosek.com/resources/academic-license/) licenses free of charge, but is otherwise a proprietary product. 
 
 ## System Requirements
 **You need Octave!**
 Obviously, since this is an interface for [Octave](http://www.gnu.org/software/octave/). However, since stable 64 bit versions does not yet exist for all platforms you might be limited to 32 bit Octave linking to 32 bit MOSEK.
 
 **You need MOSEK!**
-Again obviously, as this is an interface to [MOSEK](http://www.mosek.com/). However, only MOSEK version 6 is supported. Free [trial and academic licenses](http://www.mosek.com/resources/trial/) are available, and [quotations](http://www.mosek.com/sales/quotation/) can be requested to allow commercial usage.
+Again obviously, as this is an interface to [MOSEK](http://www.mosek.com/). However, only MOSEK version 6 is supported. Free [trial](http://mosek.com/resources/trial-license) and [academic](http://mosek.com/resources/academic-license/) licenses are available, and [quotations](https://mosek.com/introduction/buy-mosek) can be requested to allow commercial usage.
 
 **You need the OctMOSEK source code!**
 We do not distribute binary versions of the OctMOSEK package. Instead, you are referred to the **.tar.gz* file under the "Downloads" tab on this website.
@@ -28,7 +28,7 @@ The OctMOSEK package features auto-configuration which will work in most cases i
 pkg install -verbose 'LOCATION/octmosek_VERSION.tar.gz'
 ```
 
-If this does not work, we advice you to look in the [userguide](http://octmosek.googlecode.com/svn/trunk/doc/userguide.pdf) for more information.
+If this does not work, we advice you to look in the [userguide](doc/userguide.pdf) for more information.
 
 ## Getting started
 The package can be loaded with
