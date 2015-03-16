@@ -1,4 +1,7 @@
-# Welcome to the OctMOSEK project! =
+# Welcome to the OctMOSEK project!
+
+**This project is currently not under active developement..**
+
 ## Purpose
 The Octave-to-MOSEK Optimization Interface is designed to make the optimization facilities of [MOSEK](http://www.mosek.com/) available from [Octave](http://www.gnu.org/software/octave/). MOSEK is a software library able to solve large-scale optimization problems, and supports:
 
@@ -14,7 +17,7 @@ Note that the MOSEK libraries ships with [trial and academic licenses](http://ww
 Obviously, since this is an interface for [Octave](http://www.gnu.org/software/octave/). However, since stable 64 bit versions does not yet exist for all platforms you might be limited to 32 bit Octave linking to 32 bit MOSEK.
 
 **You need MOSEK!**
-Again obviously, as this is an interface to [MOSEK](http://www.mosek.com/). However, only MOSEK version 6.0.0.122 and newer are supported. Free [trial and academic licenses](http://www.mosek.com/resources/trial/) are available, and [quotations](http://www.mosek.com/sales/quotation/) can be requested to allow commercial usage.
+Again obviously, as this is an interface to [MOSEK](http://www.mosek.com/). However, only MOSEK version 6 is supported. Free [trial and academic licenses](http://www.mosek.com/resources/trial/) are available, and [quotations](http://www.mosek.com/sales/quotation/) can be requested to allow commercial usage.
 
 **You need the OctMOSEK source code!**
 We do not distribute binary versions of the OctMOSEK package. Instead, you are referred to the **.tar.gz* file under the "Downloads" tab on this website.
@@ -70,5 +73,5 @@ r_read = mosek_read(modelfile);
 r_solve = mosek(r_read.prob);
 ```
 
-## Tips and tricks, questions, feature requests and bug reports ==
+## Tips and tricks, questions, feature requests and bug reports
 We invite all users of the Octave-to-MOSEK Interface to join the [MOSEK Google group](http://groups.google.com/group/mosek). This group is particularly intended for academics using MOSEK in their research. 
